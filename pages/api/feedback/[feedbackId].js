@@ -3,7 +3,7 @@
         ceci nous servira par exemple a afficher les details d'un feedback en particulier. pour cela, nous allons creer un fichier [feedbackId].js dans le dossier api. ce fichier sera un api route dynamique qui nous permettra de recuperer un feedback en particulier en fonction de son id.
 */
 
-import { buildFeedbackPath, extractFeedback } from "./feedback";
+import { buildFeedbackPath, extractFeedback } from "./index";
 
 export default function handler(req, res) {
     const feedbackId = req.query.feedbackId;

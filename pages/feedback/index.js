@@ -5,7 +5,7 @@
       pour cela, nous allons creer un composant normal qui retournera les feedbacks recuperes du serveur.
 */
 
-import { buildFeedbackPath, extractFeedback } from "../api/feedback";
+import { buildFeedbackPath, extractFeedback } from "../api/feedback/index";
 import { useState, Fragment } from "react";
 
 export default function FeedbackPage(props) {
@@ -14,7 +14,7 @@ export default function FeedbackPage(props) {
   // declencher une requete GET pour recuperer les details d'un feedback au clic sur le bouton "Show details"
   function showDetailsHandler(id) {
     // envoyer une requete GET au serveur pour recuperer les details du feedback
-    fetch(`/api/${id}`)
+    fetch(`/api/feedback/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setFeedbackData(data.feedback);
