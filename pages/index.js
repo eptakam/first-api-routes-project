@@ -25,6 +25,8 @@ function HomePage() {
       alert('Email and Feedback must not be empty!');
       return;
     }
+
+    fetch(); // {email: 'test@test.com', text: 'This is a test feedback'}
   }
 
   return (
