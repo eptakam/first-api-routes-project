@@ -1,23 +1,28 @@
 /*
-    je desire communiquer avec le serveur mais je ne veux pas que le client puisse voir ce que je fais. c'est la que entre en jeu les API routes. 
+    je desire communiquer avec le serveur mais je ne veux pas que le client puisse voir ce que je fais. c'est la qu'entre en jeu les API routes. 
 
-    j'ai besoin d'une reference a mes input (formulaire) qui va me permettre de recuperer les valeurs entrees par l'utilisateur. D'ou l'utilisation du hook useRef de react
+    j'ai besoin des references a mes input (formulaire). ils me permettront de recuperer les valeurs entrees par l'utilisateur. D'ou l'utilisation du hook useRef de react
+
+    les références peuvent être utilisées pour accéder directement à un élément DOM ou pour stocker une valeur mutable (qui peut changer).
 */
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 function HomePage() {
+  const [feedbackItems, setFeedbackItems] = useState([]);
+
+  // creer des references aux inputs du formulaire
   const emailInputRef = useRef();
   const feedbackInputRef = useRef();
 
   // gestionnaire de la soumission du formulaire
   function submitFormHandler(event) {
-    event.preventDefault(); // empeche le rechargement de la page a la soumission du formulaire
+    event.preventDefault(); // empecher le rechargement de la page a la soumission du formulaire
 
-    // recuperer l'email entre par l'utilisateur grace a la reference a l'input
+    // recuperer l'email entre par l'utilisateur grace a la reference a l'input ref={emailInputRef}
     const enteredEmail = emailInputRef.current.value;
 
-    // recuperer le feedback entre par l'utilisateur grace a la reference a l'input
+    // recuperer le feedback entre par l'utilisateur grace a la reference a l'input ref={feedbackInputRef}
     const enteredFeedback = feedbackInputRef.current.value;
 
     // valider les donnees entrees par l'utilisateur
@@ -44,6 +49,17 @@ function HomePage() {
       .catch((error) => console.log(error));
   }
 
+  // declencher une requete GET pour recuperer les feedbacks au clic sur le bouton "Load Feedback"
+  function loadFeedbackHandler() {
+    // envoyer une requete GET au serveur pour recuperer les feedbacks
+    fetch("/api/feedback")
+      .then((response) => response.json())
+      .then((data) => {
+        setFeedbackItems(data.feedback); // mettre a jour le state feedbackItems avec les feedbacks recuperes grace a la cle "feedback" de l'objet JSON retourne par le serveur (voir le else dans le fichier pages/api/feedback.js)
+      })
+      .catch((error) => console.log(error));
+  }
+
   return (
     <div>
       <h1>The Home Page</h1>
@@ -63,6 +79,14 @@ function HomePage() {
         </div>
         <button>Send Feedback</button>
       </form>
+      <hr />
+      <button onClick={loadFeedbackHandler}>Load Feedback</button>
+      {/* afficher la liste des feedbacks */}
+      <ul>
+        {feedbackItems.map((item) => (
+          <li key={item.id}>{item.text}</li>
+        ))}
+      </ul>
     </div>
   );
 }

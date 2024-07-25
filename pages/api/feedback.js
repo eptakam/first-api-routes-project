@@ -9,33 +9,48 @@
     vu que cette fonction sera executee uniquement cote serveur, on peut utiliser des modules Node.js pour sauvegarder les donnees dans une base de donnees ou dans un fichier. Mais ne pas perdre de vue qu'avant d'ecrire dans un fichier, il faut d'abord lire le contenu du fichier pour ne pas ecraser les donnees deja existantes.
 */
 
-import fs from 'fs';  // fs est un module Node.js qui permet de lire et d'ecrire dans des fichiers
-import path from 'path';  // path est un module Node.js qui permet de manipuler les chemins de fichiers
+import fs from "fs"; // fs est un module Node.js qui permet de lire et d'ecrire dans des fichiers
+import path from "path"; // path est un module Node.js qui permet de manipuler les chemins de fichiers
+
+// rendre notre code modulable
+export function buildFeedbackPath() {
+  // determiner le chemin du fichier (construire le chemin) dans lequel nous allons sauvegarder les donnees. pour cela, on utilise la methode .join() du module path de Node.js
+  // process.cwd() retourne le repertoire de travail actuel du processus Node.js
+  return path.join(process.cwd(), "data", "feedback.json");
+}
+
+export function extractFeedback(filePath) {
+  // lire le contenu du fichier feedback.json (si le fichier n'existe pas, il sera cree): fichier qui contiendra les feedbacks
+  const fileData = fs.readFileSync(filePath);
+  console.log("fileData: ", fileData);
+
+  // convertir le contenu du fichier en objet JSON
+  const data = JSON.parse(fileData);
+  console.log("data: ", data);
+  return data;
+}
 
 export default function handler(req, res) {
-  if (req.method === 'POST') {
+  // verifier le type de requete
+  if (req.method === "POST") {
+    // la requete est de type POST
     const email = req.body.email;
     const feedbackText = req.body.text;
 
-   const newFeedback = {
+    const newFeedback = {
       id: new Date().toISOString(),
-      email,  // ecriture possible car la clé et la valeur ont le même nom (email: email)
-      text: feedbackText
+      email, // ecriture possible car la clé et la valeur ont le même nom (email: email)
+      text: feedbackText,
     };
 
-    console.log('text: ',newFeedback);
+    console.log("text: ", newFeedback);
     // store that in a database or in a file
-    // pour le faire, il nous faut d'abord determiner le chemin du fichier (construire le chemin) dans lequel nous allons sauvegarder les donnees. pour cela, on utilise la methode .join() du module path de Node.js
-    // process.cwd() retourne le repertoire de travail actuel du processus Node.js
-    const filePath = path.join(process.cwd(), 'data', 'feedback.json');  
+    // determiner le chemin du fichier feedback.json en utilisant la fonction buildFeedbackPath()
+    const filePath = buildFeedbackPath();
+    console.log("filePath: ", filePath);
 
-    // lire le contenu du fichier feedback.json (si le fichier n'existe pas, il sera cree): fichier qui contiendra les feedbacks
-    const fileData = fs.readFileSync(filePath);
-    console.log('fileData: ',fileData);
-
-    // convertir le contenu du fichier en objet JSON
-    const data = JSON.parse(fileData);
-    console.log('data: ',data);
+    // extraire les feedbacks deja existants dans le fichier feedback.json
+    const data = extractFeedback(filePath);
 
     // ajouter le nouveau feedback a l'objet JSON
     data.push(newFeedback); // s'assurer que data est un tableau sinon il y aura une erreur
@@ -44,8 +59,16 @@ export default function handler(req, res) {
     fs.writeFileSync(filePath, JSON.stringify(data)); // JSON.stringify() convertit un objet JSON en chaine de caractères
 
     // retourner une reponse (objet JSON) pour indiquer que la requete a ete traitee avec succes
-    res.status(201).json({ message: 'Success!', feedback: newFeedback });
+    res.status(201).json({ message: "Success!", feedback: newFeedback });
   } else {
-      res.status(200).json({ message: 'This is a feedback API route' });  // cette fonction retourne une reponse (objet JSON) lorsqu'une requête est faite sur cette route (http://localhost:3000/api/feedback)
+    // la requete n'est pas de type POST: dans ce cas, afficher le contenu du fichier feedback.json
+    // determiner le chemin du fichier feedback.json en utilisant la fonction buildFeedbackPath()
+    const filePath = buildFeedbackPath();
+
+    // extraire les feedbacks deja existants dans le fichier feedback.json
+    const data = extractFeedback(filePath);
+
+    // retourner une reponse (objet JSON) contenant les feedbacks extraits du fichier feedback.json
+    res.status(200).json({ feedback: data }); // une requête est faite sur cette route (http://localhost:3000/api/feedback)
   }
 }
