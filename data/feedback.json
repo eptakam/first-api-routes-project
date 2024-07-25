@@ -1,3 +1,1 @@
-{
-  "_comment": "Mes donnees seront stockées dans ce fichier JSON."
-}
+[{"id":"2024-07-25T12:53:44.057Z","email":"nino@gmail.com","text":"This is a test of our api."},{"id":"2024-07-25T12:59:41.595Z","email":"nino2@gmail.com","text":"This is a second test of our api."}]

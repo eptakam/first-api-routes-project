@@ -4,7 +4,7 @@
     j'ai besoin d'une reference a mes input (formulaire) qui va me permettre de recuperer les valeurs entrees par l'utilisateur. D'ou l'utilisation du hook useRef de react
 */
 
-import { useRef } from 'react';
+import { useRef } from "react";
 
 function HomePage() {
   const emailInputRef = useRef();
@@ -21,12 +21,27 @@ function HomePage() {
     const enteredFeedback = feedbackInputRef.current.value;
 
     // valider les donnees entrees par l'utilisateur
-    if (enteredEmail.trim() === '' || !enteredEmail.trim().includes('@') || enteredFeedback.trim() === '') {
-      alert('Email and Feedback must not be empty!');
+    if (
+      enteredEmail.trim() === "" ||
+      !enteredEmail.trim().includes("@") ||
+      enteredFeedback.trim() === ""
+    ) {
+      alert("Email and Feedback must not be empty!");
       return;
     }
 
-    fetch(); // {email: 'test@test.com', text: 'This is a test feedback'}
+    // envoyer les donnees au serveur via une requete POST
+    // les donnees seront sous cette forme {email: 'test@test.com', text: 'This is a test feedback'}
+    fetch("/api/feedback", {
+      method: "POST",
+      body: JSON.stringify({ email: enteredEmail, text: enteredFeedback }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.log(error));
   }
 
   return (
@@ -39,7 +54,12 @@ function HomePage() {
         </div>
         <div>
           <label htmlFor="feedback">Your Feedback</label>
-          <textarea id="feedback" name="feedback" rows='5' ref={feedbackInputRef}></textarea>
+          <textarea
+            id="feedback"
+            name="feedback"
+            rows="5"
+            ref={feedbackInputRef}
+          ></textarea>
         </div>
         <button>Send Feedback</button>
       </form>
