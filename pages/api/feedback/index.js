@@ -1,10 +1,10 @@
 /*
     Important:
-        Dans le dossier api, on exporte pas les composants React. mais plutot des fonctions qui vont être appelées par Next.js
+        Dans le dossier api, on n'exporte pas les composants React. mais plutot des fonctions qui vont être appelées par Next.js
 
-    Nous allons ensuite accepter les requete sur cette route et nous allons extraire les données du corps de la requête. pour les sauvegarder dans une base de donnees ou ailleurs.
+    Nous allons ensuite accepter les requete sur cette route et nous allons extraire les données du corps de la requête. pour les sauvegarder dans une base de donnees ou ailleurs (fichier json dans notre cas).
 
-    avant de le faire, il est important de determiner quel est le type de requete a declenche l'execution de notre fonction (api routes). pour cela, on utilise la methode req.method qui retourne le type de requete (GET, POST, PUT, DELETE, etc.)
+    avant de le faire, il est important de determiner quel est le type de requete qui a declenche l'execution de notre fonction (api routes). pour cela, on utilise la methode req.method qui retourne le type de requete (GET, POST, PUT, DELETE, etc.)
 
     vu que cette fonction sera executee uniquement cote serveur, on peut utiliser des modules Node.js pour sauvegarder les donnees dans une base de donnees ou dans un fichier. Mais ne pas perdre de vue qu'avant d'ecrire dans un fichier, il faut d'abord lire le contenu du fichier pour ne pas ecraser les donnees deja existantes.
 */
@@ -34,7 +34,7 @@ export default function handler(req, res) {
   // verifier le type de requete
   if (req.method === "POST") {
     // la requete est de type POST
-    const email = req.body.email;
+    const email = req.body.email; // voir body du fetch dans pages/index.js
     const feedbackText = req.body.text;
 
     const newFeedback = {
